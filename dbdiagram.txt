@@ -1,0 +1,366 @@
+// Comprehensive Accounting System Database Schema
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table users {
+  id integer [primary key]
+  name varchar
+  email varchar
+  password varchar
+  role_id integer
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table roles {
+  id integer [primary key]
+  name varchar [note: 'super_admin, admin, company_manager, branch_manager']
+  permissions json
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table companies {
+  id integer [primary key]
+  name varchar
+  type varchar [note: 'parent, child']
+  parent_id integer [note: 'Self-referential for child companies']
+  registration_number varchar
+  tax_id varchar
+  address text
+  contact_info json
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table branches {
+  id integer [primary key]
+  name varchar
+  company_id integer
+  location varchar
+  contact_info json
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table accounts {
+  id integer [primary key]
+  code varchar
+  name varchar
+  type varchar [note: 'asset, liability, equity, revenue, expense']
+  sub_type varchar
+  description text
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table ledgers {
+  id integer [primary key]
+  account_id integer
+  company_id integer
+  branch_id integer
+  name varchar
+  opening_balance decimal
+  current_balance decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table fiscal_years {
+  id integer [primary key]
+  name varchar
+  start_date date
+  end_date date
+  is_active boolean
+  is_closed boolean
+  company_id integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table transactions {
+  id integer [primary key]
+  transaction_date date
+  reference_no varchar
+  type varchar [note: 'payment, receipt, journal, transfer, bank_deposit, bank_withdrawal, bank_transfer']
+  amount decimal
+  description text
+  fiscal_year_id integer
+  created_by integer
+  approved_by integer
+  company_id integer
+  branch_id integer
+  company_bank_account_id integer [note: 'For bank transactions']
+  external_bank_account_id integer [note: 'For transactions with external parties']
+  cheque_number varchar
+  cheque_date date
+  status varchar [note: 'draft, approved, voided, cleared, bounced']
+  cleared_date date
+  bank_charges decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table transaction_details {
+  id integer [primary key]
+  transaction_id integer
+  ledger_id integer
+  debit_amount decimal
+  credit_amount decimal
+  description text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table external_companies {
+  id integer [primary key]
+  name varchar
+  contact_person varchar
+  email varchar
+  phone varchar
+  address text
+  tax_id varchar
+  is_client boolean
+  is_vendor boolean
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table external_company_branches {
+  id integer [primary key]
+  external_company_id integer
+  name varchar
+  location varchar
+  contact_info json
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table banks {
+  id integer [primary key]
+  short_name varchar
+  full_name varchar
+  is_govt boolean [note: 'Government or Private bank']
+  head_office varchar
+  head_office_address text
+  contact_person varchar
+  mobile varchar
+  email varchar
+  swift_code varchar
+  routing_number varchar
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table bank_branches {
+  id integer [primary key]
+  short_name varchar
+  full_name varchar
+  bank_id integer
+  branch_code varchar
+  manager varchar
+  address text
+  mobile varchar
+  email varchar
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table company_bank_accounts {
+  id integer [primary key]
+  company_id integer
+  branch_id integer [note: 'Company branch that owns this account']
+  bank_id integer
+  bank_branch_id integer
+  account_number varchar
+  account_name varchar
+  account_type varchar [note: 'current, savings, fixed_deposit']
+  opening_balance decimal
+  current_balance decimal
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table external_company_bank_accounts {
+  id integer [primary key]
+  external_company_id integer
+  bank_id integer
+  bank_branch_id integer
+  account_number varchar
+  account_name varchar
+  account_type varchar
+  is_active boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table transaction_parties {
+  id integer [primary key]
+  transaction_id integer
+  external_company_id integer
+  external_company_branch_id integer [note: 'Tracks which branch of the external company was involved']
+  party_type varchar [note: 'from, to']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table permissions {
+  id integer [primary key]
+  name varchar
+  description text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table role_permissions {
+  id integer [primary key]
+  role_id integer
+  permission_id integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table user_branch_access {
+  id integer [primary key]
+  user_id integer
+  branch_id integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table audit_logs {
+  id integer [primary key]
+  user_id integer
+  action varchar
+  entity_type varchar
+  entity_id integer
+  old_values json
+  new_values json
+  ip_address varchar
+  created_at timestamp
+}
+
+Table reports {
+  id integer [primary key]
+  name varchar
+  type varchar [note: 'balance_sheet, income_statement, cash_flow, custom']
+  query_params json
+  created_by integer
+  is_public boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table bank_reconciliation {
+  id integer [primary key]
+  company_bank_account_id integer
+  reconciliation_date date
+  statement_balance decimal
+  book_balance decimal
+  reconciled_balance decimal
+  status varchar [note: 'pending, completed']
+  reconciled_by integer
+  notes text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table bank_reconciliation_items {
+  id integer [primary key]
+  bank_reconciliation_id integer
+  transaction_id integer
+  item_type varchar [note: 'outstanding_deposit, outstanding_withdrawal, bank_charge, interest']
+  amount decimal
+  description text
+  is_reconciled boolean
+  created_at timestamp
+  updated_at timestamp
+}
+Table branch_transfers {
+  id integer [primary key]
+  from_branch_id integer
+  to_branch_id integer
+  amount decimal
+  transfer_date date
+  notes text
+  created_by integer
+  status varchar [note: 'pending, completed, cancelled']
+  transaction_id integer [note: 'Links to main transaction record']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table inter_company_transactions {
+  id integer [primary key]
+  from_company_id integer
+  to_company_id integer
+  from_branch_id integer
+  to_branch_id integer
+  amount decimal
+  transaction_date date
+  description text
+  created_by integer
+  approved_by integer
+  status varchar [note: 'pending, approved, completed']
+  transaction_id integer
+  created_at timestamp
+  updated_at timestamp
+}
+// Relationships
+Ref: users.role_id > roles.id
+Ref: companies.parent_id > companies.id
+Ref: branches.company_id > companies.id
+Ref: ledgers.account_id > accounts.id
+Ref: ledgers.company_id > companies.id
+Ref: ledgers.branch_id > branches.id
+Ref: fiscal_years.company_id > companies.id
+Ref: transactions.fiscal_year_id > fiscal_years.id
+Ref: transactions.created_by > users.id
+Ref: transactions.approved_by > users.id
+Ref: transactions.company_id > companies.id
+Ref: transactions.branch_id > branches.id
+Ref: transactions.company_bank_account_id > company_bank_accounts.id
+Ref: transactions.external_bank_account_id > external_company_bank_accounts.id
+Ref: transaction_details.transaction_id > transactions.id
+Ref: transaction_details.ledger_id > ledgers.id
+Ref: transaction_parties.transaction_id > transactions.id
+Ref: transaction_parties.external_company_id > external_companies.id
+Ref: transaction_parties.external_company_branch_id > external_company_branches.id
+Ref: role_permissions.role_id > roles.id
+Ref: role_permissions.permission_id > permissions.id
+Ref: user_branch_access.user_id > users.id
+Ref: user_branch_access.branch_id > branches.id
+Ref: audit_logs.user_id > users.id
+Ref: reports.created_by > users.id
+Ref: bank_branches.bank_id > banks.id
+Ref: company_bank_accounts.company_id > companies.id
+Ref: company_bank_accounts.branch_id > branches.id
+Ref: company_bank_accounts.bank_id > banks.id
+Ref: company_bank_accounts.bank_branch_id > bank_branches.id
+Ref: external_company_bank_accounts.external_company_id > external_companies.id
+Ref: external_company_bank_accounts.bank_id > banks.id
+Ref: external_company_bank_accounts.bank_branch_id > bank_branches.id
+Ref: external_company_branches.external_company_id > external_companies.id
+Ref: bank_reconciliation.company_bank_account_id > company_bank_accounts.id
+Ref: bank_reconciliation.reconciled_by > users.id
+Ref: bank_reconciliation_items.bank_reconciliation_id > bank_reconciliation.id
+Ref: bank_reconciliation_items.transaction_id > transactions.id
+Ref: branch_transfers.from_branch_id > branches.id
+Ref: branch_transfers.to_branch_id > branches.id
+Ref: branch_transfers.created_by > users.id
+Ref: branch_transfers.transaction_id > transactions.id
+Ref: inter_company_transactions.from_company_id > companies.id
+Ref: inter_company_transactions.to_company_id > companies.id
+Ref: inter_company_transactions.from_branch_id > branches.id
+Ref: inter_company_transactions.to_branch_id > branches.id
+Ref: inter_company_transactions.created_by > users.id
+Ref: inter_company_transactions.approved_by > users.id
+Ref: inter_company_transactions.transaction_id > transactions.id
