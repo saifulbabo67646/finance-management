@@ -1,5 +1,13 @@
 # Nabisco Financial Management System
 
+## Database Schema
+
+Goto this [file](database_schema_documentation.md) for the database schema documentation.
+
+### Database Schema Visualization
+
+The database schema is visualized using [DBDiagram.io](https://dbdiagram.io/). You can view the schema by visiting this [link](https://dbdiagram.io/d/nabisco_accounts_financial_management-683ac3bfbd74709cb76aeb32).
+
 ## System Overview
 
 The Nabisco Financial Management System is a comprehensive financial and accounting platform designed to handle complex organizational structures with parent-child company relationships, multiple branches, and detailed transaction tracking. The system automates accounting tasks such as ledger management, voucher entry, and financial statement generation while providing powerful reporting capabilities.
