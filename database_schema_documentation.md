@@ -229,6 +229,7 @@ This database schema is designed for a multi-company, multi-branch accounting sy
 | `branch_id` | INTEGER (FK) | References branches.id |
 | `company_bank_account_id` | INTEGER (FK) | References company_bank_accounts.id for bank transactions |
 | `external_bank_account_id` | INTEGER (FK) | References external_company_bank_accounts.id |
+| `counterparty_transaction_id`| INTEGER (FK)| Links to the transaction in the counterparty company/branch for inter-company transactions |
 | `cheque_number` | VARCHAR | Cheque number if applicable |
 | `cheque_date` | DATE | Cheque date if applicable |
 | `status` | VARCHAR | Transaction status (draft, approved, voided, cleared, bounced) |
@@ -242,6 +243,7 @@ This database schema is designed for a multi-company, multi-branch accounting sy
 - Transactions can only be created in active fiscal years
 - Draft transactions can be modified; approved transactions are immutable
 - Bank-related transactions include additional banking information
+- `counterparty_transaction_id` is used for cross-linking inter-company transactions for tracking and audit
 
 ### 5.2 `transaction_details` Table
 **Purpose**: Individual debit and credit entries that make up each transaction (double-entry bookkeeping).
@@ -523,6 +525,7 @@ This database schema is designed for a multi-company, multi-branch accounting sy
 | `approved_by` | INTEGER (FK) | References users.id |
 | `status` | VARCHAR | Transaction status (pending, approved, completed) |
 | `transaction_id` | INTEGER (FK) | References transactions.id |
+| `counterparty_transaction_id`| INTEGER (FK)| Links to the counterparty inter_company_transactions record for bi-directional linkage |
 | `created_at` | TIMESTAMP | Record creation timestamp |
 | `updated_at` | TIMESTAMP | Last modification timestamp |
 
@@ -531,6 +534,7 @@ This database schema is designed for a multi-company, multi-branch accounting sy
 - Requires higher-level approval due to inter-company nature
 - Creates entries in both companies' books
 - Essential for consolidated financial reporting
+- `counterparty_transaction_id` ensures both sides of the inter-company transaction are linked for tracking and reconciliation
 
 ---
 

@@ -95,6 +95,7 @@ Table transactions {
   branch_id integer
   company_bank_account_id integer [note: 'For bank transactions']
   external_bank_account_id integer [note: 'For transactions with external parties']
+  counterparty_transaction_id integer [note: 'Links to the transaction in the counterparty company for inter-company flows']
   cheque_number varchar
   cheque_date date
   status varchar [note: 'draft, approved, voided, cleared, bounced']
@@ -311,6 +312,7 @@ Table inter_company_transactions {
   approved_by integer
   status varchar [note: 'pending, approved, completed']
   transaction_id integer
+  counterparty_transaction_id integer [note: 'Links to the counterparty inter_company_transactions record']
   created_at timestamp
   updated_at timestamp
 }
@@ -329,6 +331,7 @@ Ref: transactions.company_id > companies.id
 Ref: transactions.branch_id > branches.id
 Ref: transactions.company_bank_account_id > company_bank_accounts.id
 Ref: transactions.external_bank_account_id > external_company_bank_accounts.id
+Ref: transactions.counterparty_transaction_id > transactions.id
 Ref: transaction_details.transaction_id > transactions.id
 Ref: transaction_details.ledger_id > ledgers.id
 Ref: transaction_parties.transaction_id > transactions.id
@@ -364,3 +367,4 @@ Ref: inter_company_transactions.to_branch_id > branches.id
 Ref: inter_company_transactions.created_by > users.id
 Ref: inter_company_transactions.approved_by > users.id
 Ref: inter_company_transactions.transaction_id > transactions.id
+Ref: inter_company_transactions.counterparty_transaction_id > inter_company_transactions.id
