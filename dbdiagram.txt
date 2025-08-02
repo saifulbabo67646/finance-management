@@ -85,6 +85,8 @@ Table transactions {
   id integer [primary key]
   transaction_date date
   reference_no varchar
+  voucher_number varchar unique
+  voucher_file varchar
   type varchar [note: 'payment, receipt, journal, transfer, bank_deposit, bank_withdrawal, bank_transfer']
   amount decimal
   description text

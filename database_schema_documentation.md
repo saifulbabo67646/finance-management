@@ -219,6 +219,8 @@ This database schema is designed for a multi-company, multi-branch accounting sy
 | `id` | INTEGER (PK) | Unique identifier for each transaction |
 | `transaction_date` | DATE | Date when the transaction occurred |
 | `reference_no` | VARCHAR | External reference number (invoice, receipt, etc.) |
+| `voucher_number` | VARCHAR | Voucher number for the transaction (e.g., DH-2024-CR-001) |
+| `voucher_file` | VARCHAR | File path to the voucher document |
 | `type` | VARCHAR | Transaction type (payment, receipt, journal, transfer, bank_deposit, etc.) |
 | `amount` | DECIMAL | Total transaction amount |
 | `description` | TEXT | Transaction description/memo |
